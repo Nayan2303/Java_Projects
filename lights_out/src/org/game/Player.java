@@ -1,6 +1,7 @@
 //Made by Nayan Patel 2022
 package org.game;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.PrintStream;
 import java.util.Random;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -17,11 +19,15 @@ public class Player
   JFrame playframe;
   JPanel playpan;
   game_button[][] lights = new game_button[5][5];
-  int lights_on = 0;
+  JLabel playlabel;
+  int lights_on = 0,moves=0;
+  
   
   public void create_gui()
   {
+	playlabel=new JLabel();
     playframe = new JFrame();
+    playframe.setLayout(new BorderLayout());
     playframe.setDefaultCloseOperation(3);
     playpan = new JPanel();
     playpan.setLayout(new GridLayout(5, 5));
@@ -34,7 +40,9 @@ public class Player
       }
     }
     starting_lights();
-    playframe.add(playpan);
+    playframe.add(BorderLayout.NORTH,playlabel);
+    playframe.add(BorderLayout.CENTER,playpan);
+    playlabel.setText("Number of lights on: "+lights_on+" Moves made: "+moves+" ");
     playframe.pack();
     playframe.repaint();
     playframe.setVisible(true);
@@ -42,11 +50,14 @@ public class Player
   
   public void actionPerformed(ActionEvent e)
   {
+	  moves++;
     game_button pressed = (game_button)e.getSource();
-    change_score(pressed);
-    System.out.println("pressed at" + pressed.coord.x + " " + pressed.coord.y);
+   
+    
     change_other_buttons(pressed.coord.x, pressed.coord.y);
-    System.out.println("Number of lights on: " + lights_on);
+    change_score(pressed);
+    playlabel.setText("Number of lights on: "+lights_on+" Moves made: "+moves+" ");
+    playframe.pack();
     playpan.repaint();
   }
   
@@ -76,6 +87,7 @@ public class Player
     }
     if (lights_on == 0)
     {
+    	
       JFrame win_frame = new JFrame();
       JOptionPane.showMessageDialog(win_frame, "You win!!");
       
@@ -87,7 +99,7 @@ public class Player
   {
     Random rand = new Random();
     int num_lights_on = rand.nextInt(10);int randx = rand.nextInt(5);int randy = rand.nextInt(5);int count = 0;
-    System.out.println(num_lights_on);
+    
     while (num_lights_on == 0) {
       num_lights_on = rand.nextInt(10);
     }
@@ -100,12 +112,10 @@ public class Player
         randx = rand.nextInt(5);
         randy = rand.nextInt(5);
       }
+      count++;
     }
     playframe.repaint();
   }
   
-  public static void main(String[] args)
-  {
-    new Player().create_gui();
-  }
+  
 }
