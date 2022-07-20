@@ -2,11 +2,10 @@
 package org.game;
 
 import java.awt.BorderLayout;
+
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintStream;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -53,10 +52,11 @@ public class Player
 	  moves++;
     game_button pressed = (game_button)e.getSource();
    
-    
-    change_other_buttons(pressed.coord.x, pressed.coord.y);
     change_score(pressed);
+    change_other_buttons(pressed.coord.x, pressed.coord.y);
+   win();
     playlabel.setText("Number of lights on: "+lights_on+" Moves made: "+moves+" ");
+   
     playframe.pack();
     playpan.repaint();
   }
@@ -85,16 +85,18 @@ public class Player
     } else {
       lights_on -= 1;
     }
-    if (lights_on == 0)
-    {
-    	
-      JFrame win_frame = new JFrame();
-      JOptionPane.showMessageDialog(win_frame, "You win!!");
-      
-      starting_lights();
-    }
+    
   }
-  
+  public void win() {
+	  if (lights_on == 0)
+	    {
+	    	
+	      JFrame win_frame = new JFrame();
+	      JOptionPane.showMessageDialog(win_frame, "You win!!");
+	      
+	      starting_lights();
+	    }
+  }
   public void starting_lights()
   {
     Random rand = new Random();
