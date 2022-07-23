@@ -3,4 +3,7 @@
 **/bin/
 *.jar
 *.project
+*.idea
 
+out
+*.iml
