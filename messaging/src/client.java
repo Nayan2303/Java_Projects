@@ -1,15 +1,26 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class client {
 Socket s;
+JFrame frame;
+JPanel panel;
 BufferedReader buffr;
 BufferedWriter buffwr;
 String username;
     public client(String st) {
         try {
             s=new Socket("localhost",9999);
+            frame=new JFrame();
+            panel=new JPanel();
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frame.setPreferredSize(new Dimension(100,100));
+            panel.setLayout(new FlowLayout());
+            frame.add(panel);
+            frame.setVisible(true);
             buffwr=new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
             buffr=new BufferedReader(new InputStreamReader(s.getInputStream()));
             username=st;
@@ -30,6 +41,9 @@ String username;
                  buffwr.write(username +": "+message);
                  buffwr.newLine();
                  buffwr.flush();
+                 panel.add(new JLabel(username +": "+message));
+                 frame.pack();
+                 frame.repaint();
 
             }
         }
@@ -45,10 +59,14 @@ String username;
               while(s.isConnected()){
                   try{
                     messages=buffr.readLine();
+
                     System.out.println(messages);
                   }catch(IOException e){
                       return;
                   }
+                  panel.add(new JLabel(messages));
+                  frame.pack();
+                  frame.repaint();
               }
             }
         }).start();
