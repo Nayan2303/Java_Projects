@@ -27,7 +27,7 @@ public Client_handle(Socket sock){
             String message=bufr.readLine();
             send(message);
         }catch (IOException e){
-
+            close_handle(bufr,bufw,socket);
         }
     }
 }
@@ -41,8 +41,26 @@ public void send(String s){
 
             }
         }catch(IOException e){
-    return;
+        close_handle(bufr,bufw,socket);
         }
+    }
+}
+public void close_handle(BufferedReader br, BufferedWriter bw, Socket s){
+
+    handles.remove(this);
+    try{
+        if(br!=null){
+            br.close();
+        }
+        if(bw!=null){
+            bw.close();
+        }
+        if(s!=null){
+            s.close();
+        }
+
+    }catch (IOException I){
+        I.printStackTrace();
     }
 }
 

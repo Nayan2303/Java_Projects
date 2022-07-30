@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -11,12 +13,20 @@ JPanel panel;
 BufferedReader buffr;
 BufferedWriter buffwr;
 String username;
+Boolean running=true;
     public client(String st) {
         try {
             s=new Socket("localhost",9999);
             frame=new JFrame();
             panel=new JPanel();
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    frame_close();
+                }
+            });
+
             frame.setPreferredSize(new Dimension(100,100));
             panel.setLayout(new FlowLayout());
             frame.add(panel);
@@ -28,6 +38,18 @@ String username;
             System.out.println("Failed to create client");
         }
     }
+    public void frame_close(){
+
+        running=false;
+        System.out.println("Executed");
+        frame.dispose();
+        System.out.println("Disposed frame");
+//        Thread.currentThread().interrupt();
+        close_client(buffr,buffwr,s);
+
+        System.out.println("Closed client");
+        System.exit(0);
+    }
     public void send(){
         String message;
         try{
@@ -36,7 +58,7 @@ String username;
             buffwr.flush();
 
              Scanner sc=new Scanner(System.in);
-             while(s.isConnected()){
+             while(running){
                  message=sc.nextLine();
                  buffwr.write(username +": "+message);
                  buffwr.newLine();
@@ -48,27 +70,46 @@ String username;
             }
         }
         catch (Exception e){
-            return;
+            frame_close();
         }
     }
-    public void getmessages(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-              String messages;
-              while(s.isConnected()){
-                  try{
-                    messages=buffr.readLine();
+    public void close_client(BufferedReader br, BufferedWriter bw, Socket s){
 
-                    System.out.println(messages);
-                  }catch(IOException e){
-                      return;
-                  }
-                  panel.add(new JLabel(messages));
-                  frame.pack();
-                  frame.repaint();
-              }
+        try{
+            if(s!=null){
+                s.close();
             }
+            if(br!=null){
+                br.close();
+
+            }
+            if(bw!=null){
+                bw.close();
+            }
+
+
+        }catch (IOException I){
+            System.out.println("Couldn't close all of them");
+        }
+    }
+
+    public void getmessages(){
+        new Thread(() -> {
+          String messages="";
+          while(running){
+
+              try{
+                messages=buffr.readLine();
+
+                System.out.println(messages);
+              }catch(IOException e){
+                  frame_close();
+              }
+              panel.add(new JLabel(messages));
+              frame.pack();
+              frame.repaint();
+          }
+          Thread.currentThread().interrupt();
         }).start();
     }
 
