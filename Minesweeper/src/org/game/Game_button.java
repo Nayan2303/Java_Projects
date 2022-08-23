@@ -6,7 +6,7 @@ import javax.swing.JButton;
 
 public class Game_button extends JButton
 {
-	private boolean ismine;
+	 boolean ismine;
 	int mines_next_to=0;
 	boolean hidden;
 	public Game_button()
@@ -18,6 +18,7 @@ public class Game_button extends JButton
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if(hidden) {
+			this.setText("");
 			return;
 		}
 		if(ismine) {
@@ -30,8 +31,8 @@ public class Game_button extends JButton
 	public boolean get_mine() {
 		return ismine;
 	}
-	public void arm_mine() {
-		 ismine=true;
+	public void toggle_mine() {
+		 ismine=!ismine;
 	}
 
 }

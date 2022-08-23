@@ -15,9 +15,11 @@ public Client_handle(Socket sock){
         bufr=new BufferedReader(new InputStreamReader(socket.getInputStream()));
         user=bufr.readLine();
         handles.add(this);
+
     }catch (IOException e){
 
     }
+    send(user +" has joined the chat");
 }
 
 @Override
