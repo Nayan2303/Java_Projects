@@ -17,7 +17,7 @@ public Client_handle(Socket sock){
         handles.add(this);
 
     }catch (IOException e){
-
+        e.printStackTrace();
     }
     send(user +" has joined the chat");
 }
@@ -27,13 +27,21 @@ public Client_handle(Socket sock){
     while(socket.isConnected()){
         try{
             String message=bufr.readLine();
+            if(message.equals("CLOSE")){
+                close_handle(bufr,bufw,socket);
+                Thread.currentThread().interrupt();
+            }
             send(message);
         }catch (IOException e){
             close_handle(bufr,bufw,socket);
+            Thread.currentThread().interrupt();
         }
     }
 }
 public void send(String s){
+    if(handles.size()<=1){
+        return;
+    }
     for(Client_handle c: handles){
         try{
             if(!c.user.equals(this.user)){
@@ -44,6 +52,7 @@ public void send(String s){
             }
         }catch(IOException e){
         close_handle(bufr,bufw,socket);
+            Thread.currentThread().interrupt();
         }
     }
 }

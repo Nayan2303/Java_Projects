@@ -41,7 +41,7 @@ Boolean running=true;
                 public void keyPressed(KeyEvent e) {
                     if(e.getKeyCode() == KeyEvent.VK_ENTER){
                         e.consume();
-                        System.out.println("Enter pressed");
+//                        System.out.println("Enter pressed");
                         send();
                     }
                 }
@@ -51,12 +51,13 @@ Boolean running=true;
 
                 }
             });
+            JScrollPane scroller = new JScrollPane( panel );
             frame.setTitle(username);
             frame.setPreferredSize(new Dimension(400,400));
             frame.setLayout(new BorderLayout());
-            panel.setPreferredSize(new Dimension(350,350));
+            panel.setPreferredSize(new Dimension(300,300));
             panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-            frame.add(panel);
+            frame.add(scroller);
             frame.add(BorderLayout.SOUTH,jt);
             frame.pack();
             frame.setVisible(true);
@@ -71,10 +72,19 @@ Boolean running=true;
     public void frame_close(){
 
         running=false;
-        System.out.println("Executed");
+
         frame.dispose();
-        System.out.println("Disposed frame");
-//        Thread.currentThread().interrupt();
+        try {
+            buffwr.write(this.username + " has left the chat");
+            buffwr.newLine();
+            buffwr.flush();
+            buffwr.write("CLOSE");
+            buffwr.newLine();
+            buffwr.flush();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+       Thread.currentThread().interrupt();
         close_client(buffr,buffwr,s);
 
         System.out.println("Closed client");
@@ -134,12 +144,13 @@ Boolean running=true;
 
     public void getmessages(){
         new Thread(() -> {
-            String messages="";
+            String messages;
             while(running){
 
                 try{
                     messages=buffr.readLine();
-                    panel.add(new JLabel(messages));
+                    panel.add(new JLabel(messages),BorderLayout.NORTH);
+
                     frame.pack();
                     frame.repaint();
 
